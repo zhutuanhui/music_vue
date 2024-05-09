@@ -69,13 +69,23 @@
       <el-table v-loading="loading" border :data="roleList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="ID" prop="id" width="120" />
-        <!-- <el-table-column label="用户id" prop="uid" :show-overflow-tooltip="true" width="150" /> -->
         <el-table-column label="用户id" prop="uid" :show-overflow-tooltip="true" width="150" />
         <el-table-column label="时长" prop="music_time" align="" width="100" />
         <el-table-column label="添加时时长" prop="total_time" :show-overflow-tooltip="true" width="150" />
         <el-table-column label="更新后时长" prop="play_total_time" width="100" />
-         <!-- <el-table-column label="执行次数" prop="cron_num" width="100" /> -->
-        <el-table-column label="是否执行脚本" prop="music_cron" width="100" />
+        <el-table-column label="执行次数" prop="music_num" width="100" />
+        <el-table-column label="是否执行" prop="music_cron" width="100" >
+          <template slot-scope="scope" >
+            <span v-if="scope.row.music_cron=='1'">是</span>
+            <span v-else>否</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否完成" prop="is_exec" width="100" >
+          <template slot-scope="scope" >
+            <span v-if="scope.row.is_exec=='1'">是</span>
+            <span v-else>否</span>
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" align="center" prop="create_time" width="180">
           <template slot-scope="scope">
             <span>{{ scope.row.ctime }}</span>
@@ -129,6 +139,14 @@
             <el-col :span="24">
             <el-form-item label="执行脚本" prop="music_cron">
               <el-radio-group v-model="form.music_cron">
+                <el-radio label="0">否</el-radio>
+                <el-radio label="1">是</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="执行完成" prop="is_exec">
+              <el-radio-group v-model="form.is_exec">
                 <el-radio label="0">否</el-radio>
                 <el-radio label="1">是</el-radio>
               </el-radio-group>
@@ -261,6 +279,7 @@ export default {
       this.form = {
         music_time: 100,
         music_cron: "1",
+        is_exec: "0",
         uid: 0,
       }
       this.resetForm('form')
@@ -310,6 +329,7 @@ export default {
         this.form = response.data
         this.form.id = id
         this.form.music_cron = this.form.music_cron.toString()
+        this.form.is_exec = this.form.is_exec.toString()
       })
     },
     /** 提交按钮 */
