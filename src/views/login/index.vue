@@ -44,7 +44,7 @@
           </span>
         </el-form-item>
       </el-tooltip>
-      <div>
+      <!-- <div>
         <el-form-item prop="captcha" style="width: 60%;float: left">
           <span class="svg-container">
             <svg-icon icon-class="user" />
@@ -60,7 +60,7 @@
           />
         </el-form-item>
         <img style="float: right;height: 100%;padding: 5px;" :src="captchaImage" @click="reloadCaptcha()">
-      </div>
+      </div> -->
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;height: 40px" @click.native.prevent="handleLogin">登录</el-button>
     </el-form>
   </div>
@@ -87,13 +87,13 @@ export default {
         callback()
       }
     }
-    const validateCaptcha = (rule, value, callback) => {
-      if (!value.trim()) {
-        callback(new Error('请输入验证码'))
-      } else {
-        callback()
-      }
-    }
+    // const validateCaptcha = (rule, value, callback) => {
+    //   if (!value.trim()) {
+    //     callback(new Error('请输入验证码'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       loginForm: {
         username: '',
@@ -103,7 +103,7 @@ export default {
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
-        captcha: [{ required: true, trigger: 'blur', validator: validateCaptcha }]
+        // captcha: [{ required: true, trigger: 'blur', validator: validateCaptcha }]
       },
       passwordType: 'password',
       capsTooltip: false,

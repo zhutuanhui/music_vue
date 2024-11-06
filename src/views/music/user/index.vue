@@ -108,6 +108,12 @@
               icon="el-icon-plus"
               @click="addMusic(scope.row)"
             >添加歌曲</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-plus"
+              @click="addMusicTime(scope.row)"
+            >添加时长</el-button>
              <el-button
               size="mini"
               type="text"
@@ -232,6 +238,44 @@
         </div>
       </el-dialog>
 
+      <!-- 添加时长 -->
+      <el-dialog :title="add_music_time_title" :visible.sync="add_music_time_open" :width="dialogWidth">
+      <el-form ref="add_music_time_form" :model="add_music_time_form" :rules="add_music_rules" label-width="80px">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="用户id" prop="uid" style="width: 90%">
+              <el-input v-model="add_music_time_form.uid" placeholder="请输入用户ID" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="听歌时长" prop="music_time" style="width: 90%">
+              <el-input v-model="add_music_time_form.music_time" placeholder="请输入听歌时长 单位小时" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+          <el-form-item label="执行脚本" prop="music_cron">
+            <el-radio-group v-model="add_music_time_form.music_cron">
+              <el-radio label="0">否</el-radio>
+              <el-radio label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="执行完成" prop="is_exec">
+            <el-radio-group v-model="add_music_time_form.is_exec">
+              <el-radio label="0">否</el-radio>
+              <el-radio label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="addMusicTimeSubmitForm">确 定</el-button>
+        <el-button @click="addMusicTimeCancel">取 消</el-button>
+      </div>
+      </el-dialog>
+
       <!-- 听歌排行 -->
       <el-dialog :title="music_rank_title" :visible.sync="music_rank" :width="dialogWidth" class="spec-dialog">
         <el-table v-loading="loading" border :data="music_rank_list">
@@ -284,6 +328,7 @@
 
 <script>
 import { listMusicUser, getMusicUserInfo, delMusicUser, addMusicUser, updateMusicUser, updateMusicUserInfo, addMusicSingle, getMusicRank, getMusicQrcode, checkMusicQrcode, apiFlushMusicLevel, userPlaylist } from '@/api/music/user'
+import { addMusicTime } from '@/api/music/listen'
 import { formatJson } from '@/utils'
 import { Message } from 'element-ui'
 export default {
@@ -313,6 +358,7 @@ export default {
       // 弹出层标题
       title: '',
       add_music_title: '',
+      add_music_title_time: '',
       music_rank_title: '',
       music_user_playlist_title: '',
       music_qrcode_title: '',
@@ -320,6 +366,7 @@ export default {
       open: false,
       music_qrcode: false,
       add_music_open: false,
+      add_music_time_open: false,
       music_rank: false,
       music_user_playlist_open: false,
       addShow: false,
@@ -348,6 +395,7 @@ export default {
       // 表单参数
       form: {},
       add_music_form: {},
+      add_music_time_form: {},
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -603,6 +651,34 @@ export default {
               if (response.code === 20000) {
                 Message.success(response.msg)
                 this.add_music_open = false
+                this.getList()
+              }
+            })
+        }
+      })
+    },
+    /* 添加时长 */
+    addMusicTime(row){
+        this.add_music_time_form = {
+        is_exec: "0",
+        music_cron: "1",
+        music_time: '100',
+        uid: row.id,
+      }
+      this.add_music_time_open = true
+      this.add_music_time_title = '添加用户'+row.username+'听歌时长'
+    },
+    addMusicTimeCancel(){
+      this.add_music_time_open = false
+    },
+    addMusicTimeSubmitForm(){
+      console.log(this.add_music_time_form)
+      this.$refs['add_music_time_form'].validate(valid => {
+        if (valid) {
+            addMusicTime(this.add_music_time_form).then(response => {
+              if (response.code === 20000) {
+                Message.success(response.msg)
+                this.add_music_time_open = false
                 this.getList()
               }
             })
